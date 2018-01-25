@@ -23,6 +23,13 @@ RUN yum -y install \
     && xz -d /tmp/phantomjs.xz \
     && install -m 755 /tmp/phantomjs /opt/phantomjs/bin/phantomjs
 
+RUN echo 'ZONE="Asia/Tokyo"' > /etc/sysconfig/clock \
+      && echo 'UTC=false' >> /etc/sysconfig/clock \
+      && yum -y install tzdata && yum clean all \
+      && cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+RUN localedef -i ja_JP -c -f UTF-8 -A /usr/share/locale/locale.alias ja_JP.UTF-8
+ENV LC_ALL ja_JP.UTF-8
+
 ENV PATH /opt/phantomjs/bin:$PATH
 VOLUME ["/data"]
 ENTRYPOINT ["/usr/bin/xvfb-run", "/opt/phantomjs/bin/phantomjs"]
